@@ -1,0 +1,26 @@
+{
+  "name": "classes",
+  "version": "1.0.0",
+  "description": "classes project",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ItamarColler/Classes.git"
+  },
+  "author": "Itamar Coller",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ItamarColler/Classes/issues"
+  },
+  "homepage": "https://github.com/ItamarColler/Classes#readme",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-esm-transformer": "^1.0.0"
+  },
+  "dependencies": {
+    "prettier": "^3.2.5"
+  }
+}
