@@ -19,8 +19,5 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "jest-esm-transformer": "^1.0.0"
-  },
-  "dependencies": {
-    "prettier": "^3.2.5"
   }
 }

@@ -1,90 +1,142 @@
 // tests/Time.test.js
 const Time = require("../Time");
 
-describe("Testing Time Class methods and constructor", () => {
-  test("Time constructor", () => {
-    const time = new Time({ hours: 2, minutes: 30, seconds: 45 });
-    expect(time.h).toBe(2);
-    expect(time.m).toBe(30);
-    expect(time.s).toBe(45);
-  });
-  test("toString method", () => {
-    const time = new Time({ hours: 2, minutes: 30, seconds: 45 });
-    expect(time.toString()).toBe("02:30:45");
-  });
-  test("addTime method", () => {
-    const time1 = new Time({ hours: 1, minutes: 30, seconds: 30 });
-    const time2 = new Time({ hours: 1, minutes: 45, seconds: 15 });
-    time1.addTime(time2);
-    expect(time1.h).toBe(3);
-    expect(time1.m).toBe(15);
-    expect(time1.s).toBe(45);
-  });
+describe("Valid cases for Time", () => {
+  test.each([
+    { input: { hours: 2, minutes: 30, seconds: 45 }, expected: "02:30:45" },
+    { input: { hours: 0, minutes: 0, seconds: 0 }, expected: "00:00:00" },
+    { input: { hours: 99, minutes: 59, seconds: 59 }, expected: "99:59:59" },
+  ])(
+    "Time constructor with input $input results in $expected",
+    ({ input, expected }) => {
+      const time = new Time(input);
+      expect(time.toString()).toBe(expected);
+    }
+  );
 
-  test("subTime method subtracts two Time instances", () => {
-    const time1 = new Time({ hours: 2, minutes: 30, seconds: 30 });
-    const time2 = new Time({ hours: 1, minutes: 45, seconds: 15 });
-    time1.subTime(time2);
-    expect(time1.h).toBe(0);
-    expect(time1.m).toBe(45);
-    expect(time1.s).toBe(15);
-  });
+  test.each([
+    {
+      input1: { hours: 1, minutes: 30, seconds: 30 },
+      input2: { hours: 0, minutes: 45, seconds: 15 },
+      expected: "02:15:45",
+    },
+  ])(
+    "addTime method correctly adds two Time instances",
+    ({ input1, input2, expected }) => {
+      const time1 = new Time(input1);
+      const time2 = new Time(input2);
+      time1.addTime(time2);
+      expect(time1.toString()).toBe(expected);
+    }
+  );
 
-  test("Comparison greater than methods", () => {
-    const time1 = new Time({ hours: 2, minutes: 30, seconds: 30 });
-    const time2 = new Time({ hours: 1, minutes: 45, seconds: 15 });
-    expect(time1.greaterThan(time2)).toBe(true);
-    expect(time1.greaterThanEqual(time2)).toBe(true);
-  });
-  test("Comparison low than methods", () => {
-    const time1 = new Time({ hours: 2, minutes: 20, seconds: 30 });
-    const time2 = new Time({ hours: 1, minutes: 45, seconds: 15 });
-    expect(time2.lowerThan(time1)).toBe(true);
-    expect(time2.lowerThanEqual(time1)).toBe(true);
-  });
-  test("resetSeconds method", () => {
-    const time = new Time({ hours: 1, minutes: 2, seconds: 22 });
+  test.each([
+    {
+      input1: { hours: 1, minutes: 30, seconds: 30 },
+      input2: { hours: 0, minutes: 45, seconds: 15 },
+      expected: "00:45:15",
+    },
+  ])(
+    "subtractTime method correctly subtracts two Time instances",
+    ({ input1, input2, expected }) => {
+      const time1 = new Time(input1);
+      const time2 = new Time(input2);
+      time1.subTime(time2);
+      expect(time1.toString()).toBe(expected);
+    }
+  );
+
+  test.each([
+    {
+      input: { hours: 1, minutes: 2, seconds: 22 },
+      seconds: 10,
+      expected: "01:02:12",
+    },
+  ])(
+    "removeSeconds method correctly removes seconds",
+    ({ input, seconds, expected }) => {
+      const time = new Time(input);
+      time.removeSeconds(seconds);
+      expect(time.toString()).toBe(expected);
+    }
+  );
+
+  test.each([
+    {
+      input: { hours: 1, minutes: 2, seconds: 22 },
+      minutes: 1,
+      expected: "01:01:22",
+    },
+  ])(
+    "removeMinutes method correctly removes minutes",
+    ({ input, minutes, expected }) => {
+      const time = new Time(input);
+      time.removeMinutes(minutes);
+      expect(time.toString()).toBe(expected);
+    }
+  );
+
+  test.each([
+    {
+      input: { hours: 1, minutes: 2, seconds: 22 },
+      hours: 1,
+      expected: "00:02:22",
+    },
+  ])(
+    "removeHours method correctly removes hours",
+    ({ input, hours, expected }) => {
+      const time = new Time(input);
+      time.removeHours(hours);
+      expect(time.toString()).toBe(expected);
+    }
+  );
+
+  test.each([
+    { input: { hours: 1, minutes: 2, seconds: 22 }, expected: "01:02:00" },
+  ])("resetSeconds method resets seconds to zero", ({ input, expected }) => {
+    const time = new Time(input);
     time.resetSeconds();
-    expect(time.h).toBe(1);
-    expect(time.m).toBe(2);
-    expect(time.s).toBe(0);
+    expect(time.toString()).toBe(expected);
   });
-  test("resetMinutes method", () => {
-    const time = new Time({ hours: 1, minutes: 2, seconds: 22 });
+
+  test.each([
+    { input: { hours: 1, minutes: 2, seconds: 22 }, expected: "01:00:22" },
+  ])("resetMinutes method resets minutes to zero", ({ input, expected }) => {
+    const time = new Time(input);
     time.resetMinutes();
-    expect(time.h).toBe(1);
-    expect(time.m).toBe(0);
-    expect(time.s).toBe(22);
+    expect(time.toString()).toBe(expected);
   });
-  test("resetHours method", () => {
-    const time = new Time({ hours: 1, minutes: 2, seconds: 22 });
+
+  test.each([
+    { input: { hours: 1, minutes: 2, seconds: 22 }, expected: "00:02:22" },
+  ])("resetHours method resets hours to zero", ({ input, expected }) => {
+    const time = new Time(input);
     time.resetHours();
-    expect(time.h).toBe(0);
-    expect(time.m).toBe(2);
-    expect(time.s).toBe(22);
+    expect(time.toString()).toBe(expected);
   });
-  test("reset method resets all to zero", () => {
-    const time = new Time({ hours: 1, minutes: 2, seconds: 22 });
+
+  test.each([
+    { input: { hours: 1, minutes: 2, seconds: 22 }, expected: "00:00:00" },
+  ])("reset method resets all to zero", ({ input, expected }) => {
+    const time = new Time(input);
     time.reset();
-    expect(time.h).toBe(0);
-    expect(time.m).toBe(0);
-    expect(time.s).toBe(0);
-  });
-  test("removeSeconds method ", () => {
-    const time = new Time({ hours: 1, minutes: 2, seconds: 22 });
-    time.removeSeconds(10);
-    expect(time.s).toBe(12);
+    expect(time.toString()).toBe(expected);
   });
 
-  test("removeMinutes method", () => {
-    const time = new Time({ hours: 1, minutes: 2, seconds: 22 });
-    time.removeMinutes(1);
-    expect(time.m).toBe(1);
-  });
+  test.each([
+    {
+      time1: { hours: 2, minutes: 30, seconds: 30 },
+      time2: { hours: 1, minutes: 45, seconds: 15 },
+    },
+  ])("Static comparison methods work correctly", ({ time1, time2 }) => {
+    const t1 = new Time(time1);
+    const t2 = new Time(time2);
 
-  test("removeHours method", () => {
-    const time = new Time({ hours: 1, minutes: 2, seconds: 22 });
-    time.removeHours(1);
-    expect(time.h).toBe(0);
+    expect(t1.greaterThan(t2)).toBe(true);
+    expect(t1.greaterThan(t2)).toBe(true);
+    expect(t2.lowerThan(t1)).toBe(true);
+    expect(t2.lowerThanEqual(t1)).toBe(true);
   });
 });
+
+describe("Invalid cases for Time", () => {});

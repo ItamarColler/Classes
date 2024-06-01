@@ -1,10 +1,23 @@
-const { isValidRange } = require("./util/TimeRangeUtil");
+const { isValidRange, validTimeInput } = require("./util/TimeRangeUtil");
 
 // src/Time.js
 class Time {
+  static MIN_RANGE_INPUT = -359999;
+  static MAX_RANGE_INPUT = 359999;
   constructor({ hours = 0, minutes = 0, seconds = 0 } = {}) {
-    const totalSeconds = Time.hoursToSeconds(hours) + Time.minutesToSeconds(minutes) + seconds
-    this.totalSeconds = isValidRange(totalSeconds)? totalSeconds: 0;
+    if (!validTimeInput(hours, minutes, seconds)) {
+      this._totalSeconds = 0;
+    } else {
+      const totalSeconds =
+        Time.hoursToSeconds(hours) + Time.minutesToSeconds(minutes) + seconds;
+      this._totalSeconds = isValidRange(
+        totalSeconds,
+        Time.MIN_RANGE_INPUT,
+        Time.MAX_RANGE_INPUT
+      )
+        ? totalSeconds
+        : 0;
+    }
   }
 
   // Helper methods for conversion
@@ -121,8 +134,6 @@ class Time {
   }
 
   greaterThanEqual(time) {
-    console.log(this, time, this >= time);
-
     return this >= time;
   }
 
@@ -160,6 +171,6 @@ class Time {
     return this._totalSeconds;
   }
 }
-Time.prototype.isValidRange = isValidRange
+Time.prototype.isValidRange = isValidRange;
 
 module.exports = Time;

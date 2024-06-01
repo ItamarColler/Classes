@@ -2,16 +2,15 @@ const Time = require("./Time");
 
 class Clock extends Time {
   #intervalClock;
-  constructor({hours = 0, minutes = 0, seconds = 0}, autostart = true) {
-    
+  constructor({ hours = 0, minutes = 0, seconds = 0 }, autostart = true) {
     super({ hours, minutes, seconds });
     if (autostart) {
-      this.start()
+      this.start();
     }
   }
   start() {
-    this.#intervalClock = setInterval(()=>{
-        super.addSeconds(1);
+    this.#intervalClock = setInterval(() => {
+      super.addSeconds(1);
     }, 1000);
   }
   stop() {
@@ -28,7 +27,5 @@ class Clock extends Time {
       .replace("SS", seconds);
   }
 }
-
-
 
 module.exports = Clock;
